@@ -11,8 +11,13 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 
+/CMake
 /toolchain
 /build
 /.vscode
 /tools
+/res
 
+cmake-variants.json
+CMakeLists.txt
+UpdateToolchain.ps1

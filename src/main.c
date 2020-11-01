@@ -4,9 +4,14 @@
 #include <string.h>
 #include <stdint.h>
 #include <libdragon.h>
+#include <mikmod.h>
 
 #include "version.h"
 #include "flashcart.h"
+
+//tbh I'm not sure what's going on here, I just lifted this from the libdragon dfs example
+MIKMODAPI extern UWORD md_mode __attribute__((section (".data")));
+MIKMODAPI extern UWORD md_mixfreq __attribute__((section (".data")));
 
 static volatile uint32_t animcounter = 0;
 
@@ -18,6 +23,8 @@ void update_counter( int ovfl )
 void draw_gym(display_context_t disp_list, void* wall_sm, void* floor_sm);
 void draw_bottom_wall(display_context_t disp_list, void* wall_sm);
 void draw_intros(void);
+MODULE* play_song(int SongID);
+void stop_song(MODULE *song);
 
 int main(void)
 {
@@ -33,12 +40,24 @@ int main(void)
     controller_init();
     timer_init();
     audio_init(44100, 2);
+
+    MikMod_RegisterAllDrivers();
+    MikMod_RegisterAllLoaders();
+
+    md_mode |= DMODE_16BITS;
+    md_mode |= DMODE_SOFT_MUSIC;
+    md_mode |= DMODE_SOFT_SNDFX;
+    //md_mode |= DMODE_STEREO;
+                                            
+    md_mixfreq = audio_get_frequency();
+
+    MikMod_Init("");
+
     /* Kick off animation update timer to fire thirty times a second */
     new_timer(TIMER_TICKS(1000000 / 30), TF_CONTINUOUS, update_counter);
 	int pad_dir=6;
 	int prev_pad_dir = pad_dir;
     
-
     draw_intros();
 
     display_init( RESOLUTION_320x240, DEPTH_16_BPP, 2, GAMMA_NONE, ANTIALIAS_RESAMPLE );
@@ -96,9 +115,31 @@ int main(void)
 
     sprite_t * mc_current_sprite = mc_idle_down;
 
+    static display_context_t disp = 0;
+
+    //play background music
+    int current_song = 0;
+    MODULE *bgm = play_song(current_song);
+    
+    int sfx_index = 0;
+    const int MAX_SFX = 5;
+
+    SAMPLE* samples[MAX_SFX];
+    int voices[MAX_SFX];
+
+    for(int i = 0; i < MAX_SFX; i++)
+    {
+        samples[i] = NULL;
+        voices[i] = -1;
+    }
+
+    MikMod_SetNumVoices(-1, MAX_SFX);
+
+
+
     while(1) 
     {
-        static display_context_t disp = 0;
+        disp = 0;
 
         /* Grab a render buffer */
         while( !(disp = display_lock()) );
@@ -115,7 +156,7 @@ int main(void)
 
         draw_gym(disp, walls, floors);
 
-		graphics_draw_text( disp, 80, 18, "N64Brew Jam Test" );
+		graphics_draw_text( disp, 80, 18, "Juicin' 64 Test Build" );
 
         graphics_draw_sprite_trans_stride( disp, player_x, player_y, mc_current_sprite, ((animcounter / 8) & 0x3)  ); 
 
@@ -123,6 +164,19 @@ int main(void)
 
         /* Force backbuffer flip */
         display_show(disp);
+
+        if(!Player_Active()) //song is done playing
+        {
+            stop_song(bgm);
+            current_song++;
+            if(current_song > 4)
+                current_song = 0;
+
+            bgm = play_song(current_song);
+        }
+
+        MikMod_Update();
+        
 
         /* Do we need to switch video displays? */
         controller_scan();
@@ -177,83 +231,86 @@ int main(void)
 				break;
 		}
 		prev_pad_dir = pad_dir;
-        // if( keys.c[0].A )
-        // {
-        //     /* Lazy switching */
-        //     mode = 1 - mode;
-        // }
+        struct controller_data keys = get_keys_down();
+        if( keys.c[0].C_up )
+        {
+            int newvol = (bgm->volume + 20 < 127 ? bgm->volume + 20 : 127);
+            Player_SetVolume(newvol);
+        }
+        if( keys.c[0].C_down )
+        {
+            int newvol = (bgm->volume >= 20 ? bgm->volume - 20 : 0);
+            Player_SetVolume(newvol);
+        }
+        if( keys.c[0].A )
+        {
+            int newvol = bgm->volume;
+            stop_song(bgm);
+            current_song++;
+            if(current_song > 4)
+                current_song = 0;
+
+            bgm = play_song(current_song);
+            Player_SetVolume(newvol);
+        }
+        if( keys.c[0].B )
+        {
+            if(samples[sfx_index])
+            {
+                Sample_Free(samples[sfx_index]);
+            }
+            switch(sfx_index)
+            {
+                case(0):
+                    samples[sfx_index] = Sample_Load("rom://fx/blip1.wav");
+                    break;
+                case(1):
+                    samples[sfx_index] = Sample_Load("rom://fx/hurt1.wav");
+                    break;
+                case(2):
+                    samples[sfx_index] = Sample_Load("rom://fx/hurt2.wav");
+                    break;
+                case(3):
+                    samples[sfx_index] = Sample_Load("rom://fx/powerup1.wav");
+                    break;
+                case(4):
+                    samples[sfx_index] = Sample_Load("rom://fx/powerup2.wav");
+                    break;
+                default:
+                    samples[sfx_index] = Sample_Load("rom://fx/hurt1.wav");
+                    break;
+            }
+
+            voices[sfx_index] = Sample_Play(samples[sfx_index], 0, 0);
+            Voice_SetPanning(voices[sfx_index], PAN_CENTER);
+            Voice_SetVolume(voices[sfx_index], 256);
+
+            sfx_index++;
+            if(sfx_index >= MAX_SFX)
+            {
+                sfx_index = 0;
+            }        
+        }
 		
     }
-}
-
-void draw_intros()
-{
-    int fp = 0;
-    fp = dfs_open("/jamlogo.sprite");
-    sprite_t *jamlogo = malloc( dfs_size( fp ) );
-    dfs_read( jamlogo, 1, dfs_size( fp ), fp );
-    dfs_close( fp );
-
-    fp = dfs_open("/n64logo.sprite");
-    sprite_t *n64logo = malloc( dfs_size( fp ) );
-    dfs_read( n64logo, 1, dfs_size( fp ), fp );
-    dfs_close( fp );
-
-    fp = dfs_open("/brewlogo.sprite");
-    sprite_t *brewlogo = malloc( dfs_size( fp ) );
-    dfs_read( brewlogo, 1, dfs_size( fp ), fp );
-    dfs_close( fp );
-
-    display_init( RESOLUTION_640x480, DEPTH_16_BPP, 2, GAMMA_NONE, ANTIALIAS_RESAMPLE );
-    /* intro movies */
-    do
+    Player_Stop();
+    Player_Free(bgm);
+    for(int i = 0; i < MAX_SFX; i++)
     {
-        static display_context_t disp = 0;
-
-        /* Grab a render buffer */
-        while( !(disp = display_lock()) );
-       
-        /*Fill the screen */
-        graphics_fill_screen( disp, 0x00000000 );
-
-        /* Set the text output color */
-        graphics_set_color( 0x00000000, 0x00000000 );
-
-		//graphics_draw_text( disp, 16, 16, "N64Brew Jam Test" );
-
-		/* Draw jam logo */
-        if(animcounter < 240)
-        {
-            graphics_draw_sprite( disp, 170, 102, n64logo);
-        }
-        else if (animcounter < 360)
-        {
-            graphics_draw_sprite( disp, 243, 120, brewlogo);
-            graphics_set_color( 0xFFFFFFFF, 0x00000000 );
-            graphics_draw_text( disp, 253, 380, "(C) 2020 KIVAN117" );
-        }
-        else
-        {
-            graphics_draw_sprite( disp, 16, 158, jamlogo);
-            graphics_set_color( 0xFFFFFFFF, 0x00000000 );
-            graphics_draw_text( disp, 253, 380, "(C) 2020 KIVAN117" );
-        }
-        /* Force backbuffer flip */
-        display_show(disp);
-    } while (animcounter < 480);
-
-    free(n64logo);
-    free(jamlogo);
-    free(brewlogo);
-
-    display_close();
+        Voice_Stop(voices[i]);
+        Sample_Free(samples[i]);
+    }
 }
 
 void draw_gym(display_context_t disp_list, void* wall_sm, void* floor_sm)
 {
     /* Attach RDP to display */
         rdp_attach_display( disp_list );
-           
+
+        //////////////////////////////////////////////////////////////////////////////////
+        //known working, but silly method
+        //sync, load each new tile into til 0 with a tmem offset of 0, then draw
+        //////////////////////////////////////////////////////////////////////////////////   
         rdp_sync( SYNC_PIPE );
         rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, wall_sm, 0); //top left corner
         rdp_draw_textured_rectangle(0, 0, 0, 15, 15, MIRROR_DISABLED);
@@ -334,4 +391,127 @@ void draw_bottom_wall(display_context_t disp_list, void* wall_sm)
         rdp_load_texture_stride( 0, 0, MIRROR_DISABLED, wall_sm, 6); //bottom edge
         rdp_draw_textured_rectangle(0, 16, 224, 303, 239, MIRROR_DISABLED); 
         rdp_detach_display();
+}
+
+void draw_intros()
+{
+    int fp = 0;
+    int logo = 0;
+    uint32_t logocounter = animcounter;
+    fp = dfs_open("/jamlogo.sprite");
+    sprite_t *jamlogo = malloc( dfs_size( fp ) );
+    dfs_read( jamlogo, 1, dfs_size( fp ), fp );
+    dfs_close( fp );
+
+    fp = dfs_open("/n64logo.sprite");
+    sprite_t *n64logo = malloc( dfs_size( fp ) );
+    dfs_read( n64logo, 1, dfs_size( fp ), fp );
+    dfs_close( fp );
+
+    fp = dfs_open("/brewlogo.sprite");
+    sprite_t *brewlogo = malloc( dfs_size( fp ) );
+    dfs_read( brewlogo, 1, dfs_size( fp ), fp );
+    dfs_close( fp );
+
+    display_init( RESOLUTION_640x480, DEPTH_16_BPP, 2, GAMMA_NONE, ANTIALIAS_RESAMPLE );
+    /* intro movies */
+    do
+    {
+        static display_context_t disp = 0;
+
+        /* Grab a render buffer */
+        while( !(disp = display_lock()) );
+       
+        /*Fill the screen */
+        graphics_fill_screen( disp, 0x00000000 );
+
+        /* Set the text output color */
+        graphics_set_color( 0x00000000, 0x00000000 );
+
+		//graphics_draw_text( disp, 16, 16, "N64Brew Jam Test" );
+
+		/* Draw jam logo */
+        if(animcounter - logocounter > 120)
+        {
+            logo++;
+            logocounter = animcounter;
+        }
+
+            switch(logo)
+            {
+                case(0):
+                case(1):
+                    graphics_draw_sprite( disp, 170, 102, n64logo);
+                    break;
+                case(2):
+                    graphics_draw_sprite( disp, 243, 120, brewlogo);
+                    graphics_set_color( 0xFFFFFFFF, 0x00000000 );
+                    graphics_draw_text( disp, 273, 380, "(C) KIVAN117" );
+                    break;
+                case(3):
+                    graphics_draw_sprite( disp, 16, 158, jamlogo);
+                    graphics_set_color( 0xFFFFFFFF, 0x00000000 );
+                    graphics_draw_text( disp, 273, 380, "(C) KIVAN117" );
+                    break;
+                default:
+                    break;
+            }
+            
+
+        /* Force backbuffer flip */
+        display_show(disp);
+
+        controller_scan();
+        struct controller_data keys = get_keys_pressed();
+        if( keys.c[0].start || keys.c[0].A )
+        {
+            logo++;
+            /* Lazy switching */
+            //mode = 1 - mode;
+        }
+    } while (logo < 4);
+
+    free(n64logo);
+    free(jamlogo);
+    free(brewlogo);
+
+    display_close();
+}
+
+MODULE* play_song(int SongID)
+{
+    //background music
+    MODULE *bgm = NULL;
+    switch(SongID)
+    {
+        case(0):
+            bgm = Player_Load("rom://music/teen_spirit.mod", 16, 0);
+            break;
+        case(1):
+            bgm = Player_Load("rom://music/basket_case.mod", 16, 0);
+            break;
+        case(2):
+            bgm = Player_Load("rom://music/enter_sand.mod", 16, 0);
+            break;
+        case(3):
+            bgm = Player_Load("rom://music/sweet_child.mod", 16, 0);
+            break;
+        case(4):
+            bgm = Player_Load("rom://music/toxicity.mod", 16, 0);
+            break;
+        default:
+            bgm = Player_Load("rom://music/teen_spirit.mod", 16, 0);
+            break;
+    }
+    Player_Start(bgm);
+
+    return bgm;
+}
+
+void stop_song(MODULE* song)
+{
+    audio_write_silence();
+    audio_write_silence();
+    Player_Stop();
+    Player_Free(song);
 }

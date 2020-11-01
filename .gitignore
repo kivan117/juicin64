@@ -11,6 +11,7 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 
+/cen64
 /CMake
 /toolchain
 /build
@@ -21,3 +22,5 @@ _deps
 cmake-variants.json
 CMakeLists.txt
 UpdateToolchain.ps1
+run_emulator.bat
+run_hardware.bat

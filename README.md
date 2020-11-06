@@ -21,3 +21,8 @@ Food and Drink Sprites - https://vectorpixelstar.itch.io/
 Modern Gym Background - https://limezu.itch.io/
 
 Character Sprites - https://opengameart.org/users/chasersgaming
+
+Background music:
+
+The background music all comes from The Mod Archive
+I did edit the mod files to cut down the song lengths

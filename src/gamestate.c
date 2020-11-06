@@ -2,10 +2,26 @@
 #include "music.h"
 
 extern volatile uint32_t animcounter;
+volatile int powerup_spawn_counter = 0;
+volatile int weight_spawn_counter = 0;
+
+void spawn_powerup(int ovfl)
+{
+    powerup_spawn_counter++;
+}
+
+void spawn_weight(int ovfl)
+{
+    weight_spawn_counter++;
+}
 
 //base initialization function to setup a new gamestate
 GAME* setup_main_game(void)
 {
+    uint32_t count;
+    count = timer_ticks();
+    srand(count);
+
     GAME* newgame = (GAME*)malloc(sizeof(GAME));
 
     newgame->pad_dir = 6;
@@ -77,12 +93,28 @@ GAME* setup_main_game(void)
     dfs_read( newgame->gym_tiles[FLOORS], 1, dfs_size( fp ), fp );
     dfs_close( fp );
 
+    fp = dfs_open("/juice.sprite");
+    newgame->powerup_sprites = malloc( dfs_size( fp ) );
+    dfs_read( newgame->powerup_sprites, 1, dfs_size( fp ), fp );
+    dfs_close( fp );
+    
+    fp = dfs_open("/weights.sprite");
+    newgame->weight_sprites = malloc( dfs_size( fp ) );
+    dfs_read( newgame->weight_sprites, 1, dfs_size( fp ), fp );
+    dfs_close( fp );
+
     newgame->mc_current_sprite = newgame->mc_sprites[MC_IDLE_DOWN];
 
     newgame->disp = 0;
 
-    newgame->mc.x = 100;
-    newgame->mc.y = 60;
+    newgame->mc.x = 96;
+    newgame->mc.y = 64;
+    newgame->mc.coll_width = 16;
+    newgame->mc.coll_height = 16;
+    newgame->mc.draw_width = 16;
+    newgame->mc.draw_height = 24;
+    newgame->mc.dir = DOWN;
+    newgame->mc.action = IDLE;
 
     newgame->current_song = 0;
     newgame->bgm = play_song(newgame->current_song);
@@ -94,6 +126,21 @@ GAME* setup_main_game(void)
         newgame->voices[it] = -1;
     }
 
+    for(int y_it=0; y_it < GYM_ROWS; y_it++)
+    {
+        for(int x_it = 0; x_it < GYM_COLS; x_it++)
+        {
+            newgame->occupied[x_it][y_it] = false;
+        }
+    }
+
+    newgame->active_powerups = 0;
+
+    newgame->active_weights = 0;
+
+
+    new_timer(TIMER_TICKS(5000000), TF_CONTINUOUS, spawn_powerup);
+    new_timer(TIMER_TICKS(2000000), TF_CONTINUOUS, spawn_weight);
     newgame->frame_count = animcounter;
 
     return newgame;

@@ -26,3 +26,5 @@ Background music:
 
 The background music all comes from The Mod Archive
 I did edit the mod files to cut down the song lengths
+
+Game over font is Sky Scrappers by Tom Waterhouse - 2dforever.com

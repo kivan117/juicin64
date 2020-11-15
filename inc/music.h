@@ -3,10 +3,9 @@
 
 #include <libdragon.h>
 #include <mikmod.h>
+#include "gamestate.h"
 
-#define MAX_SONGS 5
-
-MODULE* play_song(int SongID);
+MODULE* play_song(GAME* game, int SongID);
 void stop_song(MODULE *song);
 
 #endif

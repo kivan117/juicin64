@@ -179,8 +179,8 @@ GAME* setup_main_game(void)
     newgame->mc_current_sprite = newgame->mc_sprites[MC_IDLE_DOWN];
 
     newgame->songs[0] = Player_Load("rom://music/enter_sand.mod", 127, 0);
-    newgame->songs[1] = Player_Load("rom://music/basket_case.mod", 127, 0);
-    newgame->songs[2] = Player_Load("rom://music/teen_spirit.mod", 127, 0);
+    newgame->songs[1] = Player_Load("rom://music/teen_spirit.mod", 127, 0);
+    newgame->songs[2] = Player_Load("rom://music/basket_case.mod", 127, 0);
     newgame->songs[3] = Player_Load("rom://music/sweet_child.mod", 127, 0);
     newgame->songs[4] = Player_Load("rom://music/toxicity.mod", 127, 0);
 
@@ -195,7 +195,7 @@ GAME* setup_main_game(void)
     newgame->mc.dir = DOWN;
     newgame->mc.action = IDLE;
 
-    newgame->current_song = 0;
+    newgame->current_song = 1;
     newgame->bgm = play_song(newgame, newgame->current_song);
     newgame->sfx_index = 0;
 

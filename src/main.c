@@ -57,11 +57,11 @@ int main(void)
 
                 if(game_over)
                 {
-                    game_over = false;
                     state = RESET;
                 }
                 break;
             case(RESET):
+                game_over = false;
                 cleanup_main_game(game);
                 state = INTROS;
                 break;
@@ -173,7 +173,7 @@ void draw_intros()
         display_show(disp);
         
         controller_scan();
-        struct controller_data keys = get_keys_pressed();
+        struct controller_data keys = get_keys_down();
         if( keys.c[0].start || keys.c[0].A )
         {
             logo++;

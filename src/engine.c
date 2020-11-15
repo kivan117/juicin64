@@ -239,9 +239,6 @@ void cleanup_main_game(GAME* game)
     graphics_fill_screen( game->disp, 0x000000FF );
     display_show(game->disp);
 
-    //stop and free background music
-    Player_Stop();
-    Player_Free(game->bgm);
     //stop and free all sound effect samples
     for(int it = 0; it < MAX_SFX; it++)
     {
@@ -268,6 +265,7 @@ void cleanup_main_game(GAME* game)
     free(game->hud_juice);
     free(game->no_fighting);
 
+    Player_Stop();
     for(int it = 0; it < MAX_SONGS; it++)
     {
         Player_Free(game->songs[it]);
@@ -558,6 +556,8 @@ void check_collisions(GAME* game)
         }  
 
         game->active_powerups--;
+        if(game->active_powerups < 0)
+            game->active_powerups = 0;
 
     }
 
@@ -615,6 +615,8 @@ void check_collisions(GAME* game)
         }  
 
         game->active_weights--;
+        if(game->active_weights < 0)
+            game->active_weights = 0;
 
     }
 
@@ -696,6 +698,7 @@ void check_collisions(GAME* game)
                 game->mobs[0].x =           game->mobs[it].x;
                 game->mobs[0].y =           game->mobs[it].y;
             }
+            game->active_mobs = 0;
 
         }
         else if(it != game->active_mobs - 1)
@@ -709,5 +712,7 @@ void check_collisions(GAME* game)
             game->mobs[it].y =           game->mobs[game->active_mobs - 1].y;
         }
         game->active_mobs--;
+        if(game->active_mobs < 0)
+            game->active_mobs = 0;
     }
 }

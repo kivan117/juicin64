@@ -23,6 +23,7 @@ enum MC_SPRITES {MC_IDLE_DOWN,  MC_IDLE_LEFT,  MC_IDLE_RIGHT,  MC_IDLE_UP,
                  MC_WALK_DOWN,  MC_WALK_LEFT,  MC_WALK_RIGHT,  MC_WALK_UP,
                  MC_PUNCH_DOWN, MC_PUNCH_LEFT, MC_PUNCH_RIGHT, MC_PUNCH_UP};
 enum GYM_TILES {BORDER, WALL1, WALL2, WALL3, FLOORS};
+enum EFFECTS {POWERUP1, POWERUP2, HURT1, HURT2, TOTAL_SFX=4};
 
 typedef struct {
 
@@ -51,7 +52,8 @@ typedef struct {
     MODULE *bgm;
     int sfx_index;
 
-    SAMPLE* samples[MAX_SFX];
+    SAMPLE* effects[TOTAL_SFX];
+    SAMPLE* samples[MAX_SFX]; 
     int voices[MAX_SFX];
 
     int active_mobs;

@@ -240,6 +240,12 @@ void setup_songs(GAME* newgame)
 
 void setup_sfx(GAME* newgame)
 {
+
+    newgame->effects[POWERUP1] = Sample_Load("rom://fx/powerup1.wav");
+    newgame->effects[POWERUP2] = Sample_Load("rom://fx/powerup2.wav");
+    newgame->effects[HURT1] = Sample_Load("rom://fx/hurt1.wav");
+    newgame->effects[HURT2] = Sample_Load("rom://fx/hurt2.wav");
+
     newgame->sfx_index = 0;
 
     for(int it = 0; it < MAX_SFX; it++)

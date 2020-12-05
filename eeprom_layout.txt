@@ -1,12 +1,6 @@
 first 8 bytes, header:
-0x00 inverted checksum of all bytes after the header
-0x01 future use
-0x02 future use
-0x03 future use
-0x04 future use
-0x05 future use
-0x06 future use
-0x07 future use
+0x00   checksum: inverted sum of all bytes after the header
+0x01-0x07 label: 'JUICN64' 0x4A5549434E3634
 
 top scores: 4 bytes per score
 0x08-0x11 score #1

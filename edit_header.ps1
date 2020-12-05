@@ -1,3 +1,10 @@
+# A Windows powershell script to edit the rom header.
+#
+# The edit is only to assist EverDrive users.
+# It sets 3 bytes in the rom header to tell the
+# EverDrive to load the game with eeprom4k enabled.
+# Alternatively you could just edit the save_db.txt
+
 $filepath="$PSScriptRoot\build\juicin64.z64"
 $tempFilePath="$PSScriptRoot\build\temp_juicin64.z64"
 $bytes  = [System.IO.File]::ReadAllBytes($filepath)

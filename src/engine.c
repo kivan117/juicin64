@@ -243,7 +243,12 @@ void cleanup_main_game(GAME* game)
     for(int it = 0; it < MAX_SFX; it++)
     {
         Voice_Stop(game->voices[it]);
-        Sample_Free(game->samples[it]);
+        game->samples[it] = NULL;
+        //Sample_Free(game->samples[it]);
+    }
+    for(int it = 0; it < TOTAL_SFX; it++)
+    {
+        Sample_Free(game->effects[it]);
     }
     //free all the main character sprites
     for(int it = 0; it < MC_SPRITE_TOTAL; it++)
@@ -500,11 +505,8 @@ void spawn_new_mob(GAME* game)
 
 void check_collisions(GAME* game)
 {
-    for(int it = 0; it < MAX_POWERUPS; it++)
+    for(int it = 0; it < game->active_powerups; it++)
     {
-        if(it >= game->active_powerups)
-            break;
-
         if((game->mc.x + game->mc.coll_width + 4) < game->powerups[it].x + 24) //hard 16 is the offset due to the left wall
             continue;
         if(game->mc.x + 4 > (game->powerups[it].x + game->powerups[it].coll_width + 24))
@@ -516,14 +518,19 @@ void check_collisions(GAME* game)
 
         game->occupied[game->powerups[it].x / 16][game->powerups[it].y / 16] = false;                  
         
-        if(game->samples[game->sfx_index])
-        {
-            Sample_Free(game->samples[game->sfx_index]);
-        }
+        // if(game->samples[game->sfx_index])
+        // {
+        //     Sample_Free(game->samples[game->sfx_index]);
+        // }
+        // if(game->powerups[it].type == JUICE)
+        //     game->samples[game->sfx_index] = Sample_Load("rom://fx/powerup1.wav");
+        // else if(game->powerups[it].type == WATER)
+        //     game->samples[game->sfx_index] = Sample_Load("rom://fx/powerup2.wav");
+
         if(game->powerups[it].type == JUICE)
-            game->samples[game->sfx_index] = Sample_Load("rom://fx/powerup1.wav");
+            game->samples[game->sfx_index] = game->effects[POWERUP1];
         else if(game->powerups[it].type == WATER)
-            game->samples[game->sfx_index] = Sample_Load("rom://fx/powerup2.wav");
+            game->samples[game->sfx_index] = game->effects[POWERUP2];
 
         game->voices[game->sfx_index] = Sample_Play(game->samples[game->sfx_index], 0, 0);
         Voice_SetPanning(game->voices[game->sfx_index], PAN_CENTER);
@@ -544,7 +551,7 @@ void check_collisions(GAME* game)
             game->rage = game->rage >= 4 ? game->rage - 4 : 0;
         }
 
-        if(it != game->active_powerups - 1)
+        if((it != game->active_powerups - 1) && (game->active_powerups >= 1))
         {
             game->powerups[it].coll_height = game->powerups[game->active_powerups - 1].coll_height;
             game->powerups[it].coll_width = game->powerups[game->active_powerups - 1].coll_width;
@@ -561,11 +568,8 @@ void check_collisions(GAME* game)
 
     }
 
-    for(int it = 0; it < MAX_WEIGHTS; it++)
+    for(int it = 0; it < game->active_weights; it++)
     {
-        if(it >= game->active_weights)
-            break;
-
         if((game->mc.x + game->mc.coll_width + 4) < game->weights[it].x+16) //8 is visual offset of the weight inside the tile image
             continue;
         if(game->mc.x + 4 > (game->weights[it].x + game->weights[it].coll_width+16))
@@ -577,7 +581,7 @@ void check_collisions(GAME* game)
 
         game->occupied[game->weights[it].x / 16][game->weights[it].y / 16] = false;                  
         
-        if(it != game->active_weights - 1)
+        if((it != game->active_weights - 1) && (game->active_weights >= 1))
         {
             game->weights[it].coll_height = game->weights[game->active_weights - 1].coll_height;
             game->weights[it].coll_width = game->weights[game->active_weights - 1].coll_width;
@@ -598,12 +602,12 @@ void check_collisions(GAME* game)
             game->juice--;
         }     
 
-        if(game->samples[game->sfx_index])
-        {
-            Sample_Free(game->samples[game->sfx_index]);
-        }
-        game->samples[game->sfx_index] = Sample_Load("rom://fx/hurt2.wav");
-
+        // if(game->samples[game->sfx_index])
+        // {
+        //     Sample_Free(game->samples[game->sfx_index]);
+        // }
+        //game->samples[game->sfx_index] = Sample_Load("rom://fx/hurt2.wav");
+        game->samples[game->sfx_index] = game->effects[HURT2];
         game->voices[game->sfx_index] = Sample_Play(game->samples[game->sfx_index], 0, 0);
         Voice_SetPanning(game->voices[game->sfx_index], PAN_CENTER);
         Voice_SetVolume(game->voices[game->sfx_index], 256);
@@ -620,11 +624,8 @@ void check_collisions(GAME* game)
 
     }
 
-    for(int it = 0; it < MAX_MOBS; it++)
+    for(int it = 0; it < game->active_mobs; it++)
     {
-        if(it >= game->active_mobs)
-            break;
-
         if((game->mc.x + game->mc.coll_width + 4) < game->mobs[it].x + 4) //hard 16 is the offset due to the left wall
             continue;
         if(game->mc.x + 4 > (game->mobs[it].x + game->mobs[it].coll_width + 4))
@@ -634,12 +635,12 @@ void check_collisions(GAME* game)
         if((game->mc.y + game->mc.draw_height - game->mc.coll_height) > (game->mobs[it].y + game->mobs[it].draw_height))
             continue;
 
-        if(game->samples[game->sfx_index])
-        {
-            Sample_Free(game->samples[game->sfx_index]);
-        }
-        game->samples[game->sfx_index] = Sample_Load("rom://fx/hurt1.wav");
-
+        // if(game->samples[game->sfx_index])
+        // {
+        //     Sample_Free(game->samples[game->sfx_index]);
+        // }
+        // game->samples[game->sfx_index] = Sample_Load("rom://fx/hurt1.wav");
+        game->samples[game->sfx_index] = game->effects[HURT1];
         game->voices[game->sfx_index] = Sample_Play(game->samples[game->sfx_index], 0, 0);
         Voice_SetPanning(game->voices[game->sfx_index], PAN_CENTER);
         Voice_SetVolume(game->voices[game->sfx_index], 256);
@@ -656,9 +657,7 @@ void check_collisions(GAME* game)
             game->juice--;
         }
         else
-            game->rage++;
-
-        
+            game->rage++;        
 
         if(game->rage >= 10)
         {
@@ -701,7 +700,7 @@ void check_collisions(GAME* game)
             game->active_mobs = 0;
 
         }
-        else if(it != game->active_mobs - 1)
+        else if((it != game->active_mobs - 1) && (game->active_mobs >= 1))
         {
             game->mobs[it].coll_height = game->mobs[game->active_mobs - 1].coll_height;
             game->mobs[it].coll_width =  game->mobs[game->active_mobs - 1].coll_width;

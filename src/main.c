@@ -11,6 +11,7 @@
 
 #include "gamestate.h"
 #include "engine.h"
+#include "saves.h"
 
 
 //tbh I'm not sure what's going on here, I just lifted this from the libdragon dfs example
@@ -27,7 +28,6 @@ void update_counter( int ovfl )
 
 void init_all_systems(void);
 void draw_intros(void);
-void check_eeprom(void);
 
 int main(void)
 {
@@ -54,8 +54,8 @@ int main(void)
                 
                 update_controller(game);
                 update_logic(game);
-                update_audio(game);
                 update_graphics(game);
+                update_audio(game);
 
                 if(game_over)
                 {
@@ -114,7 +114,7 @@ void init_all_systems()
             while( !(debug_disp = display_lock()) );
         
             /*Fill the screen */
-            graphics_fill_screen( debug_disp, 0x00000000 );
+            graphics_fill_screen( debug_disp, 0x000000FF );
 
             graphics_set_color( 0xFFFFFFFF, 0x000000FF );
             graphics_draw_text( debug_disp, 116, 80, "EEPROM ERROR" );
@@ -122,12 +122,15 @@ void init_all_systems()
             /* Force backbuffer flip */
             display_show(debug_disp);
         }
+        
     }
-    else //eeprom does exist
+    else //eeprom does exist. run checksum, reset it if it fails.
     {
-        check_eeprom();
-    }
-    
+        if(!check_eeprom())
+        {
+            reset_eeprom();
+        }
+    }    
 }
 
 void draw_intros()
@@ -210,41 +213,4 @@ void draw_intros()
     free(n64logo);
     free(jamlogo);
     free(brewlogo);
-}
-
-void check_eeprom()
-{
-    //get the saved header with checksum
-    uint8_t stored_sum[8];
-    eeprom_read(0, stored_sum);
-
-    uint8_t temp_buffer[8];
-    uint8_t sum = 0;
-    //sum all other bytes in eeprom, invert the result
-    for(int i = 1; i<64; i++) //eeprom is 512 bytes long, read in 8-byte blocks
-    {
-        eeprom_read(i, temp_buffer);
-        for(int k = 0; k<8; k++)
-        {
-            sum += temp_buffer[k];
-        }
-    }
-    sum = ~sum;
-    //compare the stored value to the computed sum
-    if(stored_sum[0] != sum)
-    {
-        //write a whole new eeprom
-        stored_sum[0] = 0xFF;
-        for(int i = 1; i<8; i++)
-        {
-            stored_sum[i] = 0x00;
-        }
-        eeprom_write(0, stored_sum); //write the expected checksum to the header
-        stored_sum[0] = 0x00; //make sure all values in our 8 byte buffer are 0
-        //write all 0's to the rest of eeprom
-        for(int i = 1; i < 64; i++)
-        {
-            eeprom_write(i, stored_sum);
-        }
-    }
 }

@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "gym.h"
 #include "music.h"
+#include "saves.h"
 
 extern volatile uint32_t animcounter; //updated by a continuous timer. see main.c for details
 extern volatile int powerup_spawn_counter;
@@ -113,6 +114,8 @@ void update_graphics(GAME* game)
             ending_seq -= (animcounter - game->frame_count);
         if(ending_seq <= 0)
         {
+            insert_score(game->scores, game->gains);
+            write_scores(game->scores);
             game_over = true;
         }
         return;

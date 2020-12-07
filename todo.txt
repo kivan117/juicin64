@@ -1,0 +1,41 @@
+##############################################
+####    Finish by submission deadline     ####
+##############################################
+
+Change spawn rate for infinite level play mode
+
+Discrete levels play mode
+    collect all the weights on screen each "day" to advance to the next "day"
+    this mode needs a separate high score list and a highest day reached list
+
+Start Menu
+    add a logo
+    add a barbell maybe?
+    move the prep game loading functions here?
+
+
+##############################################
+####           Never Implemented          ####
+##############################################
+
+move music loading to a background thread 
+    main menu loading screen is due to pre-loading all music on main thread
+
+different enemy types
+    walks in medium size circle (square really)
+    seeks and removes water bottles
+    stops and changes axis every x steps
+    slow, but always walks towards player
+
+selectable music "stations" (playlists)
+    96 FM, The Rock (the only implemented playlist, standard rock tunes)
+    Chipper Radio (fast paced typical 'chiptune' music)
+    Buzz'n FM (fast techno-leaning songs)
+    Non-Stop Hop (hip hop influence songs)
+
+Test Your Might - fun interlude / minigame
+    Every x levels, or after scoring high enough in infinite mode
+    similar to test your might from mortal kombat 1
+    button mash to deadlift.
+    view is zoomed in and only shows hands, shoes, bar
+    after lifting, view pans over to show how many plates you lifted

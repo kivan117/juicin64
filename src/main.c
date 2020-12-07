@@ -14,7 +14,7 @@
 #include "saves.h"
 
 
-//tbh I'm not sure what's going on here, I just lifted this from the libdragon dfs example
+//tbh I'm not sure what's going on here, I just lifted this part from the libdragon dfs example
 MIKMODAPI extern UWORD md_mode __attribute__((section (".data")));
 MIKMODAPI extern UWORD md_mixfreq __attribute__((section (".data")));
 
@@ -28,6 +28,8 @@ void update_counter( int ovfl )
 
 void init_all_systems(void);
 void draw_intros(void);
+void draw_main_menu(void);
+void draw_high_scores(uint32_t* scores);
 
 int main(void)
 {
@@ -44,6 +46,7 @@ int main(void)
                 state = MAIN_MENU;
                 break;
             case(MAIN_MENU):
+                draw_main_menu();
                 state = PREP_GAME;
                 break;
             case(PREP_GAME):
@@ -59,15 +62,19 @@ int main(void)
 
                 if(game_over)
                 {
-                    state = RESET;
+                    state = HIGH_SCORES;
                 }
+                break;
+            case(HIGH_SCORES):
+                draw_high_scores(game->scores);
+                state = RESET;
                 break;
             case(RESET):
                 game_over = false;
                 cleanup_main_game(game);
                 state = INTROS;
                 break;
-            default:
+            default: //should not happen
                 state = INTROS;
                 break;
         }
@@ -129,7 +136,7 @@ void init_all_systems()
         if(!check_eeprom())
         {
             reset_eeprom();
-        }
+        }        
     }    
 }
 
@@ -184,13 +191,17 @@ void draw_intros()
                     break;
                 case(2):
                     graphics_draw_sprite( disp, 120, 45, brewlogo);
-                    graphics_set_color( 0xFFFFFFFF, 0x00000000 );
-                    graphics_draw_text( disp, 116, 190, "(C)KIVAN117" );
+                    //putting game copyright here was confusing visually
+                    //I don't have a copyright on the logos
+                    //graphics_set_color( 0xFFFFFFFF, 0x00000000 );
+                    //graphics_draw_text( disp, 116, 190, "(C)KIVAN117" );
                     break;
                 case(3):
                     graphics_draw_sprite( disp, 8, 79, jamlogo);
-                    graphics_set_color( 0xFFFFFFFF, 0x00000000 );
-                    graphics_draw_text( disp, 116, 190, "(C)KIVAN117" );
+                    //putting game copyright here was confusing visually
+                    //I don't have a copyright on the logos
+                    //graphics_set_color( 0xFFFFFFFF, 0x00000000 );
+                    //graphics_draw_text( disp, 116, 190, "(C)KIVAN117" );
                     break;
                 default:
                     break;
@@ -213,4 +224,100 @@ void draw_intros()
     free(n64logo);
     free(jamlogo);
     free(brewlogo);
+}
+
+void draw_main_menu(void)
+{
+    display_context_t disp = 0;
+    bool keep_waiting = true;
+    while(keep_waiting)
+    {
+        /* Grab a render buffer */
+        while( !(disp = display_lock()) );
+        
+        /*Fill the screen */
+        graphics_fill_screen( disp, 0x00000000 );
+
+        /* Set the text output color */
+        graphics_set_color( 0xFFFFFFFF, 0x00000000 );
+
+        //draw Menu
+        graphics_draw_text( disp, 124, 40, "Main Menu" );
+        
+        graphics_draw_text( disp, 132, 120, "Press A" );
+        /* Force backbuffer flip */
+        display_show(disp);
+
+
+        controller_scan();
+        struct controller_data keys = get_keys_down();
+        if( keys.c[0].start || keys.c[0].A || keys.c[0].B)
+        {
+            keep_waiting = false;
+            /* Grab a render buffer */
+            while( !(disp = display_lock()) );
+            
+            /*Fill the screen */
+            graphics_fill_screen( disp, 0x00000000 );
+
+            /* Set the text output color */
+            graphics_set_color( 0xFFFFFFFF, 0x00000000 );
+
+            //draw Menu
+            graphics_draw_text( disp, 132, 80, "Loading" );
+            /* Force backbuffer flip */
+            display_show(disp);
+        }
+    }
+}
+
+void draw_high_scores(uint32_t* scores)
+{
+    display_context_t disp = 0;
+    bool keep_waiting = true;
+    while(keep_waiting)
+    {
+        /* Grab a render buffer */
+        while( !(disp = display_lock()) );
+        
+        /*Fill the screen */
+        graphics_fill_screen( disp, 0x00000000 );
+
+        /* Set the text output color */
+        graphics_set_color( 0xFFFFFFFF, 0x00000000 );
+
+        //draw high score table
+        graphics_draw_text( disp, 116, 40, "HUGE GAINS:" );
+        char temp_str[16];
+        sprintf(temp_str, " 1:  %10lu", scores[0]);
+        graphics_draw_text( disp, 100, 64, temp_str );      
+        sprintf(temp_str, " 2:  %10lu", scores[1]);
+        graphics_draw_text( disp, 100, 76, temp_str );
+        sprintf(temp_str, " 3:  %10lu", scores[2]);
+        graphics_draw_text( disp, 100, 88, temp_str );
+        sprintf(temp_str, " 4:  %10lu", scores[3]);
+        graphics_draw_text( disp, 100, 100, temp_str );
+        sprintf(temp_str, " 5:  %10lu", scores[4]);
+        graphics_draw_text( disp, 100, 112, temp_str );
+        sprintf(temp_str, " 6:  %10lu", scores[5]);
+        graphics_draw_text( disp, 100, 124, temp_str );
+        sprintf(temp_str, " 7:  %10lu", scores[6]);
+        graphics_draw_text( disp, 100, 136, temp_str );
+        sprintf(temp_str, " 8:  %10lu", scores[7]);
+        graphics_draw_text( disp, 100, 148, temp_str );
+        sprintf(temp_str, " 9:  %10lu", scores[8]);
+        graphics_draw_text( disp, 100, 160, temp_str );
+        sprintf(temp_str, "10:  %10lu", scores[9]);
+        graphics_draw_text( disp, 100, 172, temp_str );
+        /* Force backbuffer flip */
+        display_show(disp);
+
+
+        controller_scan();
+        struct controller_data keys = get_keys_down();
+        if( keys.c[0].start || keys.c[0].A || keys.c[0].B)
+        {
+            keep_waiting = false;
+        }
+    }
 }

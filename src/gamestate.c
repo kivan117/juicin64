@@ -1,5 +1,6 @@
 #include "gamestate.h"
 #include "music.h"
+#include "saves.h"
 
 extern volatile uint32_t animcounter;
 volatile int powerup_spawn_counter = 0;
@@ -41,6 +42,8 @@ GAME* setup_main_game(void)
     srand(count);
 
     GAME* newgame = (GAME*)malloc(sizeof(GAME));
+
+    read_scores(newgame->scores);
 
     newgame->gains = 0;
     newgame->juice = 0;

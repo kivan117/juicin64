@@ -2,7 +2,7 @@ first 8 bytes, header:
 0x00   checksum: inverted sum of all bytes after the header
 0x01-0x07 label: 'JUICN64' 0x4A5549434E3634
 
-top scores: 4 bytes per score
+infinite mode top scores: 4 bytes per score
 0x08-0x11 score #1
 0x12-0x15 score #2
 0x16-0x19 score #3

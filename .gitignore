@@ -24,4 +24,4 @@ CMakeLists.txt
 UpdateToolchain.ps1
 run_emulator.bat
 run_hardware.bat
-todo.txt
+run_emulator_pal.bat

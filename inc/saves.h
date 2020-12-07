@@ -20,4 +20,17 @@ void read_scores(uint32_t* scores);
 //no sorting is done by this function, only blind copy
 void write_scores(uint32_t* scores);
 
+//takes an unsorted list of 10 scores
+//sorts the 10 scores, greatest to least
+//stores the result in the input argument
+//no value is returned
+void sort_scores(uint32_t* scores);
+
+//takes 10 unsigned 32bit scores, sorted greatest to least and one new score
+//inserts the new score into the sorted list
+//if the new score is less than all others, it is discarded
+//the newly sorted top 10 scores are stored in the first argument
+//returns the position, 0 to 10, of the new score in the sorted list
+uint8_t insert_score(uint32_t* scores, uint32_t newscore);
+
 #endif

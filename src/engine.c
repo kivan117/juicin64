@@ -16,6 +16,8 @@ extern timer_link_t *weight_timer;
 extern timer_link_t *mob_timer;
 
 int ending_seq = 0;
+int start_seq = 90;
+int juice_type_counter = 0;
 
 void update_controller(GAME* game)
 {
@@ -54,17 +56,19 @@ void update_logic(GAME* game)
     {
         if(ending_seq <= 0)
         {
-            update_mc_pos(game);
-        
-            update_mob_pos(game);
-
             spawn_new_powerups(game);
 
             spawn_new_weights(game);
 
             spawn_new_mob(game);
+            if(start_seq <= 0)
+            {
+                update_mc_pos(game);
+            
+                update_mob_pos(game);
 
-            check_collisions(game);
+                check_collisions(game);
+            }
         }
     }
 
@@ -95,6 +99,41 @@ void update_graphics(GAME* game)
         else
             graphics_draw_text( game->disp, 136, 112, "Paused" );    
         display_show(game->disp);
+        return;
+    }
+    else if(start_seq > 0)
+    {
+        for(int it = 0; it < game->active_powerups; it++)
+        {
+            graphics_draw_sprite_trans_stride( game->disp, game->powerups[it].x + 24, game->powerups[it].y + 48, game->powerup_sprites, game->powerups[it].type );
+        }
+        for(int it = 0; it < game->active_weights; it++)
+        {
+            graphics_draw_sprite_trans_stride( game->disp, game->weights[it].x+8, game->weights[it].y + 48 + 3, game->weight_sprites, game->weights[it].type - 2 ); //hard 2 because first weights type is 2 in the enum
+        }
+        for(int it = 0; it < game->active_mobs; it++)
+        {
+            graphics_draw_sprite_trans_stride( game->disp, game->mobs[it].x, game->mobs[it].y, game->mob_sprites[game->mobs[it].dir], ((animcounter / 6) & 0x3)  );
+        }
+        graphics_draw_sprite_trans_stride( game->disp, game->mc.x, game->mc.y, game->mc_current_sprite, ((animcounter / 6) & 0x3)  );
+
+        draw_bottom_wall(game->disp, game->gym_tiles[BORDER]);
+
+        if(start_seq < 30)
+            graphics_draw_sprite_trans( game->disp, 106, 100, game->lift); //lift
+        else
+            graphics_draw_sprite_trans( game->disp, 106, 100, game->ready); //ready
+
+        display_show(game->disp);
+
+        if((animcounter - game->frame_count) > 0)
+            start_seq -= (animcounter - game->frame_count);
+        // if(start_seq <= 0)
+        // {
+        //     insert_score(game->scores, game->gains);
+        //     write_scores(game->scores);
+        //     game_over = true;
+        // }
         return;
     }
     else if(ending_seq > 0)
@@ -427,8 +466,8 @@ void spawn_new_powerups(GAME* game)
     if(powerup_spawn_counter > 0)
     {
         
-        int pos_x = (rand() % GYM_COLS);
-        int pos_y = (rand() % GYM_ROWS);
+        int pos_x = 1 +  (rand() % (GYM_COLS-2));
+        int pos_y = 1 + (rand() % (GYM_ROWS-2));
         if(game->occupied[pos_x][pos_y] == false)
         {
             powerup_spawn_counter--;
@@ -441,9 +480,12 @@ void spawn_new_powerups(GAME* game)
                 game->powerups[game->active_powerups].draw_width = 8;
                 game->powerups[game->active_powerups].coll_height = 16;
                 game->powerups[game->active_powerups].coll_width = 8;
-                if((rand() & 0x07) == 7)
+                
+                juice_type_counter++;
+                if(juice_type_counter == 9)
                 {
                     game->powerups[game->active_powerups].type = WATER;
+                    juice_type_counter = 0;
                 }
                 else
                 {
@@ -461,8 +503,8 @@ void spawn_new_weights(GAME* game)
     if(weight_spawn_counter > 0)
     {
         
-        int pos_x = (rand() % GYM_COLS);
-        int pos_y = (rand() % GYM_ROWS);
+        int pos_x = 1 +  (rand() % (GYM_COLS-2));
+        int pos_y = 1 + (rand() % (GYM_ROWS-2));
         if(game->occupied[pos_x][pos_y] == false)
         {
             weight_spawn_counter--;
@@ -486,9 +528,45 @@ void spawn_new_mob(GAME* game)
 {
     if(mob_spawn_counter > 0)
     {
+        int pos_x, pos_y, cardinal_dir;
+        int coin_toss = rand() % 2;
+
+        if(coin_toss) //let's spawn at top or bottom and go north/south
+        {
+            coin_toss = rand() % 2;
+            if(coin_toss) //spawn at top
+            {
+                pos_x = (rand() % GYM_COLS);
+                pos_y = 0;
+                cardinal_dir = 1;                
+            }
+            else //spawn at bottom
+            {
+                pos_x = (rand() % GYM_COLS);
+                pos_y = GYM_ROWS - 1;
+                cardinal_dir = 3;
+            }           
+        }
+        else //let's spawn at one of the sides and go east/west
+        {
+            coin_toss = rand() % 2;
+            if(coin_toss) //spawn at left
+            {
+                pos_x = 0;
+                pos_y = (rand() % GYM_ROWS);
+                cardinal_dir = 0;
+            }
+            else //spawn at right
+            {
+                pos_x = GYM_COLS - 1;
+                pos_y = (rand() % GYM_ROWS);
+                cardinal_dir = 2;
+            }
+        }
         
-        int pos_x = (rand() % GYM_COLS);
-        int pos_y = (rand() % GYM_ROWS);
+
+        //pos_x = (rand() % GYM_COLS);
+        //pos_y = (rand() % GYM_ROWS);
         
         mob_spawn_counter--;
         if(game->active_mobs < MAX_MOBS)
@@ -499,7 +577,7 @@ void spawn_new_mob(GAME* game)
             game->mobs[game->active_mobs].draw_width = 16;
             game->mobs[game->active_mobs].coll_height = 16;
             game->mobs[game->active_mobs].coll_width = 8;
-            game->mobs[game->active_mobs].dir = rand() & 0x03; //only pick cardinal directions, but do so at random
+            game->mobs[game->active_mobs].dir = cardinal_dir;//rand() & 0x03; //only pick cardinal directions, but do so at random
             game->active_mobs++;
         }
         

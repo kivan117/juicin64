@@ -2,16 +2,18 @@
 ####    Finish by submission deadline     ####
 ##############################################
 
-Change spawn rate for infinite level play mode
-
 Discrete levels play mode
     collect all the weights on screen each "day" to advance to the next "day"
+    higher levels have more enemies total, or more difficult enemies
     this mode needs a separate high score list and a highest day reached list
+    this mode is the original vision for this game
 
 Start Menu
     add a logo
     add a barbell maybe?
     move the prep game loading functions here?
+
+fix loading screen (pre-load music during intro logos)
 
 
 ##############################################

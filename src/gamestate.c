@@ -88,9 +88,9 @@ GAME* setup_main_game(void)
     weight_spawn_counter = 3;
     mob_spawn_counter = 3;
 
-    juice_timer = new_timer(TIMER_TICKS(5000000), TF_CONTINUOUS, spawn_powerup);
+    juice_timer = new_timer(TIMER_TICKS(2000000), TF_CONTINUOUS, spawn_powerup);
     weight_timer = new_timer(TIMER_TICKS(2000000), TF_CONTINUOUS, spawn_weight);
-    mob_timer = new_timer(TIMER_TICKS(10000000), TF_CONTINUOUS, spawn_mob);
+    mob_timer = new_timer(TIMER_TICKS(12000000), TF_CONTINUOUS, spawn_mob);
     
     newgame->frame_count = animcounter;
 
@@ -223,6 +223,16 @@ int fp = 0;
     fp = dfs_open("/hud_juice.sprite");
     newgame->hud_juice = malloc( dfs_size( fp ) );
     dfs_read( newgame->hud_juice, 1, dfs_size( fp ), fp );
+    dfs_close( fp );
+
+    fp = dfs_open("/ready.sprite");
+    newgame->ready = malloc( dfs_size( fp ) );
+    dfs_read( newgame->ready, 1, dfs_size( fp ), fp );
+    dfs_close( fp );
+
+    fp = dfs_open("/lift.sprite");
+    newgame->lift = malloc( dfs_size( fp ) );
+    dfs_read( newgame->lift, 1, dfs_size( fp ), fp );
     dfs_close( fp );
 
     fp = dfs_open("/no_fighting.sprite");

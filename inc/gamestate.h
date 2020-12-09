@@ -66,7 +66,7 @@ typedef struct {
     PICKUP weights[MAX_WEIGHTS]; //ring buffer for weights
     bool occupied[GYM_COLS][GYM_ROWS];
 
-    sprite_t* no_fighting;
+    sprite_t* ready, *lift, *no_fighting;
 
     MODULE* songs[MAX_SONGS];
 

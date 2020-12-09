@@ -72,7 +72,7 @@ int main(void)
             case(RESET):
                 game_over = false;
                 cleanup_main_game(game);
-                state = INTROS;
+                state = MAIN_MENU;
                 break;
             default: //should not happen
                 state = INTROS;

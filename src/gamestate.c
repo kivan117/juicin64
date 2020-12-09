@@ -84,9 +84,9 @@ GAME* setup_main_game(void)
     newgame->active_weights = 0;
     newgame->active_mobs = 0;
 
-    powerup_spawn_counter = 0;
-    weight_spawn_counter = 0;
-    mob_spawn_counter = 0;
+    powerup_spawn_counter = 3;
+    weight_spawn_counter = 3;
+    mob_spawn_counter = 3;
 
     juice_timer = new_timer(TIMER_TICKS(5000000), TF_CONTINUOUS, spawn_powerup);
     weight_timer = new_timer(TIMER_TICKS(2000000), TF_CONTINUOUS, spawn_weight);

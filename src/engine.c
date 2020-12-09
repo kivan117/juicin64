@@ -568,6 +568,8 @@ void check_collisions(GAME* game)
         game->active_powerups--;
         if(game->active_powerups < 0)
             game->active_powerups = 0;
+        if(game->active_powerups == 0)
+            powerup_spawn_counter++;
 
     }
 
@@ -624,6 +626,8 @@ void check_collisions(GAME* game)
         game->active_weights--;
         if(game->active_weights < 0)
             game->active_weights = 0;
+        if(game->active_weights == 0)
+            weight_spawn_counter++;
 
     }
 
@@ -716,5 +720,6 @@ void check_collisions(GAME* game)
         game->active_mobs--;
         if(game->active_mobs < 0)
             game->active_mobs = 0;
+        mob_spawn_counter++;
     }
 }

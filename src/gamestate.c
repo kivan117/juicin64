@@ -31,7 +31,6 @@ void spawn_mob(int ovfl)
 }
 
 void setup_sprites(GAME* game);
-void setup_songs(GAME* game);
 void setup_sfx(GAME* game);
 
 //base initialization function to setup a new gamestate
@@ -65,7 +64,7 @@ GAME* setup_main_game(void)
     newgame->mc.dir = DOWN;
     newgame->mc.action = IDLE;
 
-    setup_songs(newgame);
+    //setup_songs(newgame);
 
     newgame->current_song = 0;
     newgame->bgm = play_song(newgame, newgame->current_song);
@@ -241,14 +240,6 @@ int fp = 0;
     dfs_close( fp );
 
     newgame->mc_current_sprite = newgame->mc_sprites[MC_IDLE_DOWN];
-}
-void setup_songs(GAME* newgame)
-{
-    newgame->songs[0] = Player_Load("rom://music/enter_sand.mod", 127, 0);
-    newgame->songs[1] = Player_Load("rom://music/teen_spirit.mod", 127, 0);
-    newgame->songs[2] = Player_Load("rom://music/basket_case.mod", 127, 0);
-    newgame->songs[3] = Player_Load("rom://music/sweet_child.mod", 127, 0);
-    newgame->songs[4] = Player_Load("rom://music/toxicity.mod", 127, 0);
 }
 
 void setup_sfx(GAME* newgame)

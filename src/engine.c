@@ -312,11 +312,7 @@ void cleanup_main_game(GAME* game)
     free(game->hud_juice);
     free(game->no_fighting);
 
-    Player_Stop();
-    for(int it = 0; it < MAX_SONGS; it++)
-    {
-        Player_Free(game->songs[it]);
-    }
+    stop_song(game->bgm);
 
     //finally, destroy the game object itself
     free(game);
@@ -538,13 +534,13 @@ void spawn_new_mob(GAME* game)
             {
                 pos_x = (rand() % GYM_COLS);
                 pos_y = 0;
-                cardinal_dir = 1;                
+                cardinal_dir = 3;                
             }
             else //spawn at bottom
             {
                 pos_x = (rand() % GYM_COLS);
                 pos_y = GYM_ROWS - 1;
-                cardinal_dir = 3;
+                cardinal_dir = 1;
             }           
         }
         else //let's spawn at one of the sides and go east/west

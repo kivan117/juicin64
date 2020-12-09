@@ -2,26 +2,27 @@
 ####    Finish by submission deadline     ####
 ##############################################
 
+Start Menu
+    add a logo
+    add a barbell maybe?
+    move the prep game loading functions here?
+
+High scores
+    add some visual appeal
+
+sort player and enemy sprites by y location
+
+##############################################
+####           Never Implemented          ####
+##############################################
 Discrete levels play mode
     collect all the weights on screen each "day" to advance to the next "day"
     higher levels have more enemies total, or more difficult enemies
     this mode needs a separate high score list and a highest day reached list
     this mode is the original vision for this game
 
-Start Menu
-    add a logo
-    add a barbell maybe?
-    move the prep game loading functions here?
-
-fix loading screen (pre-load music during intro logos)
-
-
-##############################################
-####           Never Implemented          ####
-##############################################
-
 move music loading to a background thread 
-    main menu loading screen is due to pre-loading all music on main thread
+    currently cheating and just loading every song into memory during the intro logos
 
 different enemy types
     walks in medium size circle (square really)

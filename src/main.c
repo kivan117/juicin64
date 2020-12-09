@@ -79,7 +79,9 @@ int main(void)
                 break;
         }
 
-    }    
+    }
+
+    cleanup_songs();   
 
 }
 
@@ -186,17 +188,23 @@ void draw_intros()
             switch(logo)
             {
                 case(0):
+                    graphics_draw_sprite( disp, 103, 51, n64logo);
+                    display_show(disp);
+                    setup_songs();
+                    logo++;
+                    break;
                 case(1):
+                case(2):
                     graphics_draw_sprite( disp, 103, 51, n64logo);
                     break;
-                case(2):
+                case(3):
                     graphics_draw_sprite( disp, 120, 45, brewlogo);
                     //putting game copyright here was confusing visually
                     //I don't have a copyright on the logos
                     //graphics_set_color( 0xFFFFFFFF, 0x00000000 );
                     //graphics_draw_text( disp, 116, 190, "(C)KIVAN117" );
                     break;
-                case(3):
+                case(4):
                     graphics_draw_sprite( disp, 8, 79, jamlogo);
                     //putting game copyright here was confusing visually
                     //I don't have a copyright on the logos
@@ -219,7 +227,7 @@ void draw_intros()
             /* Lazy switching */
             //mode = 1 - mode;
         }
-    } while (logo < 4);
+    } while (logo < 5);
 
     free(n64logo);
     free(jamlogo);

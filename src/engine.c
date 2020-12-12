@@ -219,7 +219,14 @@ void update_graphics(GAME* game)
         graphics_draw_sprite_trans_stride( game->disp, game->mobs[it].x, game->mobs[it].y, game->mob_sprites[game->mobs[it].dir], ((animcounter / 6) & 0x3)  );
     }
     graphics_draw_sprite_trans_stride( game->disp, game->mc.x, game->mc.y, game->mc_current_sprite, ((animcounter / 6) & 0x3)  );
-
+    for(int it = 0; it < MAX_WEIGHTS; it++)
+    {
+        if(game->score_pops[it].ttl > 0)
+        {
+            graphics_draw_sprite_trans_stride( game->disp, game->score_pops[it].x+8, game->score_pops[it].y + 48 + 3, game->score_pop_sprites, game->score_pops[it].score - 1 ); //hard 2 because first weights type is 2 in the enum
+            game->score_pops[it].ttl -= (animcounter - game->frame_count);
+        }
+    }
     draw_bottom_wall(game->disp, game->gym_tiles[BORDER]);
 
     display_show(game->disp);
@@ -658,8 +665,28 @@ void check_collisions(GAME* game)
         if((game->mc.y + game->mc.draw_height - game->mc.coll_height) > (game->weights[it].y + game->weights[it].coll_height + 48 + 3))
             continue;
 
-        game->occupied[game->weights[it].x / 16][game->weights[it].y / 16] = false;                  
-        
+        game->occupied[game->weights[it].x / 16][game->weights[it].y / 16] = false; 
+
+        if(game->juice == 0)
+        {
+            game->score_pops[game->current_score_pop].x = game->weights[it].x;
+            game->score_pops[game->current_score_pop].y = game->weights[it].y;
+            game->score_pops[game->current_score_pop].ttl = 15;
+            game->score_pops[game->current_score_pop].score = 1;
+
+            game->gains += 100;
+        }
+        else
+        {
+            game->score_pops[game->current_score_pop].x = game->weights[it].x;
+            game->score_pops[game->current_score_pop].y = game->weights[it].y;
+            game->score_pops[game->current_score_pop].ttl = 15;
+            game->score_pops[game->current_score_pop].score = game->juice;
+
+            game->gains += 100 * game->juice;
+            game->juice--;
+        }
+
         if((it != game->active_weights - 1) && (game->active_weights >= 1))
         {
             game->weights[it].coll_height = game->weights[game->active_weights - 1].coll_height;
@@ -671,15 +698,7 @@ void check_collisions(GAME* game)
             game->weights[it].y = game->weights[game->active_weights - 1].y;
         }
 
-        if(game->juice == 0)
-        {
-            game->gains += 100;
-        }
-        else
-        {
-            game->gains += 100 * game->juice;
-            game->juice--;
-        }     
+     
 
         // if(game->samples[game->sfx_index])
         // {

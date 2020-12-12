@@ -6,6 +6,7 @@
 #include "player.h"
 #include "mob.h"
 #include "pickups.h"
+#include "score_popups.h"
 
 #define MAX_SFX 5
 #define MC_SPRITE_TOTAL 12
@@ -46,6 +47,7 @@ typedef struct {
     sprite_t* mob_sprites[MOB_SPRITE_TOTAL];
     sprite_t* emote_sprites;
     sprite_t* hud_juice;
+    sprite_t* score_pop_sprites;
 
     display_context_t disp;
 
@@ -69,6 +71,9 @@ typedef struct {
     sprite_t* ready, *lift, *no_fighting;
 
     MODULE* songs[MAX_SONGS];
+
+    POPUP score_pops[MAX_WEIGHTS];
+    uint8_t current_score_pop;
 
 } GAME;
 

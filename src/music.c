@@ -1,7 +1,7 @@
 #include "music.h"
 #include "gamestate.h"
 
-static global_songs[MAX_SONGS];
+static MODULE* global_songs[MAX_SONGS];
 
 MODULE* play_song(GAME* game, int SongID)
 {

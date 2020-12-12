@@ -79,6 +79,15 @@ GAME* setup_main_game(void)
         }
     }
 
+    for(int it = 0; it < MAX_WEIGHTS; it++)
+    {
+        newgame->score_pops[it].score = 1;
+        newgame->score_pops[it].x = 1;
+        newgame->score_pops[it].y = 1;
+        newgame->score_pops[it].ttl = -1;
+    }
+    newgame->current_score_pop = 0;
+
     newgame->active_powerups = 0;
     newgame->active_weights = 0;
     newgame->active_mobs = 0;
@@ -237,6 +246,11 @@ int fp = 0;
     fp = dfs_open("/no_fighting.sprite");
     newgame->no_fighting = malloc( dfs_size( fp ) );
     dfs_read( newgame->no_fighting, 1, dfs_size( fp ), fp );
+    dfs_close( fp );
+
+    fp = dfs_open("/score_popups.sprite");
+    newgame->score_pop_sprites = malloc( dfs_size( fp ) );
+    dfs_read( newgame->score_pop_sprites, 1, dfs_size( fp ), fp );
     dfs_close( fp );
 
     newgame->mc_current_sprite = newgame->mc_sprites[MC_IDLE_DOWN];

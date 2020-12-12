@@ -145,7 +145,7 @@ void update_graphics(GAME* game)
         draw_bottom_wall(game->disp, game->gym_tiles[BORDER]);
 
         if(ending_seq < 60)
-            graphics_draw_sprite_trans( game->disp, 8, 40, game->no_fighting);
+            graphics_draw_sprite_trans( game->disp, 88, 80, game->no_fighting);
 
         display_show(game->disp);
 

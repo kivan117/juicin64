@@ -8,7 +8,7 @@
 
 #include "version.h"
 #include "flashcart.h"
-
+#include "music.h"
 #include "gamestate.h"
 #include "engine.h"
 #include "saves.h"
@@ -81,7 +81,7 @@ int main(void)
 
     }
 
-    cleanup_songs();   
+    cleanup_songs();
 
 }
 
@@ -236,6 +236,11 @@ void draw_intros()
 
 void draw_main_menu(void)
 {
+    int fp = 0;
+    fp = dfs_open("/main_logo.sprite");
+    sprite_t *main_logo = malloc( dfs_size( fp ) );
+    dfs_read( main_logo, 1, dfs_size( fp ), fp );
+    dfs_close( fp );
     display_context_t disp = 0;
     bool keep_waiting = true;
     while(keep_waiting)
@@ -250,7 +255,8 @@ void draw_main_menu(void)
         graphics_set_color( 0xFFFFFFFF, 0x00000000 );
 
         //draw Menu
-        graphics_draw_text( disp, 124, 40, "Main Menu" );
+        //graphics_draw_text( disp, 124, 40, "Main Menu" );
+        graphics_draw_sprite( disp, 94, 30, main_logo);
         
         graphics_draw_text( disp, 132, 120, "Press A" );
         /* Force backbuffer flip */
@@ -277,6 +283,7 @@ void draw_main_menu(void)
             display_show(disp);
         }
     }
+    free(main_logo);
 }
 
 void draw_high_scores(uint32_t* scores)

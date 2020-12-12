@@ -28,9 +28,12 @@ enum EFFECTS {POWERUP1, POWERUP2, HURT1, HURT2, TOTAL_SFX=4};
 
 typedef struct {
 
+    uint8_t highscore_pos;
     uint32_t scores[10];
     uint32_t gains;
     uint8_t juice, rage;
+    int ending_seq;
+    int start_seq;
 
     struct controller_data keys;
     int pad_dir;

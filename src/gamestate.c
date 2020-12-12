@@ -44,6 +44,7 @@ GAME* setup_main_game(void)
 
     read_scores(newgame->scores);
 
+    newgame->highscore_pos = 10;
     newgame->gains = 0;
     newgame->juice = 0;
     newgame->rage = 0;
@@ -55,8 +56,8 @@ GAME* setup_main_game(void)
 
     newgame->disp = 0;
 
-    newgame->mc.x = 96;
-    newgame->mc.y = 64;
+    newgame->mc.x = 152;
+    newgame->mc.y = 108;
     newgame->mc.coll_width = 8;
     newgame->mc.coll_height = 16;
     newgame->mc.draw_width = 16;
@@ -101,6 +102,9 @@ GAME* setup_main_game(void)
     mob_timer = new_timer(TIMER_TICKS(12000000), TF_CONTINUOUS, spawn_mob);
     
     newgame->frame_count = animcounter;
+    
+    newgame->ending_seq = 0;
+    newgame->start_seq = 90;
 
     return newgame;
 }
@@ -112,7 +116,7 @@ int fp = 0;
     newgame->mc_sprites[MC_IDLE_DOWN] = malloc( dfs_size( fp ) );
     dfs_read( newgame->mc_sprites[MC_IDLE_DOWN], 1, dfs_size( fp ), fp );
     dfs_close( fp );
-
+    
 	fp = dfs_open("/mc_idle_left.sprite");
     newgame->mc_sprites[MC_IDLE_LEFT] = malloc( dfs_size( fp ) );
     dfs_read( newgame->mc_sprites[MC_IDLE_LEFT], 1, dfs_size( fp ), fp );

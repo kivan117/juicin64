@@ -29,7 +29,7 @@ void update_counter( int ovfl )
 void init_all_systems(void);
 void draw_intros(void);
 void draw_main_menu(void);
-void draw_high_scores(uint32_t* scores);
+void draw_high_scores(uint32_t* scores, uint8_t highscore_pos, uint32_t gains);
 
 int main(void)
 {
@@ -66,7 +66,7 @@ int main(void)
                 }
                 break;
             case(HIGH_SCORES):
-                draw_high_scores(game->scores);
+                draw_high_scores(game->scores, game->highscore_pos, game->gains);
                 state = RESET;
                 break;
             case(RESET):
@@ -241,6 +241,14 @@ void draw_main_menu(void)
     sprite_t *main_logo = malloc( dfs_size( fp ) );
     dfs_read( main_logo, 1, dfs_size( fp ), fp );
     dfs_close( fp );
+    fp = dfs_open("/mc_idle_down.sprite");
+    sprite_t *mc_stand = malloc( dfs_size( fp ) );
+    dfs_read( mc_stand, 1, dfs_size( fp ), fp );
+    dfs_close( fp );
+    fp = dfs_open("/weights.sprite");
+    sprite_t *barbell = malloc( dfs_size( fp ) );
+    dfs_read( barbell, 1, dfs_size( fp ), fp );
+    dfs_close( fp );
     display_context_t disp = 0;
     bool keep_waiting = true;
     while(keep_waiting)
@@ -257,8 +265,10 @@ void draw_main_menu(void)
         //draw Menu
         //graphics_draw_text( disp, 124, 40, "Main Menu" );
         graphics_draw_sprite( disp, 94, 30, main_logo);
-        
-        graphics_draw_text( disp, 132, 120, "Press A" );
+        graphics_draw_text( disp, 36,  120, "Juice Up. Lift Heavy. Get Huge." );
+        graphics_draw_sprite_trans_stride( disp, 152, 162, mc_stand, 0);
+        graphics_draw_sprite_trans_stride( disp, 144, 178, barbell, 2);
+        graphics_draw_text( disp, 132, 192, "Press A" );
         /* Force backbuffer flip */
         display_show(disp);
 
@@ -284,9 +294,11 @@ void draw_main_menu(void)
         }
     }
     free(main_logo);
+    free(mc_stand);
+    free(barbell);
 }
 
-void draw_high_scores(uint32_t* scores)
+void draw_high_scores(uint32_t* scores, uint8_t highscore_pos, uint32_t gains)
 {
     display_context_t disp = 0;
     bool keep_waiting = true;
@@ -304,26 +316,33 @@ void draw_high_scores(uint32_t* scores)
         //draw high score table
         graphics_draw_text( disp, 116, 40, "HUGE GAINS:" );
         char temp_str[16];
-        sprintf(temp_str, " 1:  %10lu", scores[0]);
-        graphics_draw_text( disp, 100, 64, temp_str );      
-        sprintf(temp_str, " 2:  %10lu", scores[1]);
-        graphics_draw_text( disp, 100, 76, temp_str );
-        sprintf(temp_str, " 3:  %10lu", scores[2]);
-        graphics_draw_text( disp, 100, 88, temp_str );
-        sprintf(temp_str, " 4:  %10lu", scores[3]);
-        graphics_draw_text( disp, 100, 100, temp_str );
-        sprintf(temp_str, " 5:  %10lu", scores[4]);
-        graphics_draw_text( disp, 100, 112, temp_str );
-        sprintf(temp_str, " 6:  %10lu", scores[5]);
-        graphics_draw_text( disp, 100, 124, temp_str );
-        sprintf(temp_str, " 7:  %10lu", scores[6]);
-        graphics_draw_text( disp, 100, 136, temp_str );
-        sprintf(temp_str, " 8:  %10lu", scores[7]);
-        graphics_draw_text( disp, 100, 148, temp_str );
-        sprintf(temp_str, " 9:  %10lu", scores[8]);
-        graphics_draw_text( disp, 100, 160, temp_str );
-        sprintf(temp_str, "10:  %10lu", scores[9]);
-        graphics_draw_text( disp, 100, 172, temp_str );
+
+        for(uint8_t it = 0; it < highscore_pos; it++)
+        {
+            sprintf(temp_str, "%2u:  %10lu", it+1, scores[it]);
+            graphics_draw_text( disp, 100, 64 + (12*it), temp_str ); 
+        }
+
+        graphics_set_color( graphics_make_color(0xff,0xff,0x00,0xff), 0x00000000 );
+        if(highscore_pos < 10)
+        {
+            sprintf(temp_str, "%2u:  %10lu", highscore_pos+1, gains);
+            graphics_draw_text( disp, 100, 64 + (12 * highscore_pos), temp_str );
+        }
+        else
+        {
+            sprintf(temp_str, "%10lu", gains);
+            graphics_draw_text( disp, 140, 64 + (12 * highscore_pos), temp_str );
+        }
+
+
+        graphics_set_color( 0xFFFFFFFF, 0x00000000 );
+        for(uint8_t it = highscore_pos + 1; it < 10; it++)
+        {
+            sprintf(temp_str, "%2u:  %10lu", it+1, scores[it]);
+            graphics_draw_text( disp, 100, 64 + (12 * it), temp_str ); 
+        }
+
         /* Force backbuffer flip */
         display_show(disp);
 

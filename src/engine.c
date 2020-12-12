@@ -15,8 +15,6 @@ extern timer_link_t *juice_timer;
 extern timer_link_t *weight_timer;
 extern timer_link_t *mob_timer;
 
-int ending_seq = 0;
-int start_seq = 90;
 int juice_type_counter = 0;
 
 void update_controller(GAME* game)
@@ -54,14 +52,14 @@ void update_logic(GAME* game)
 
     if(paused == false)
     {
-        if(ending_seq <= 0)
+        if(game->ending_seq <= 0)
         {
             spawn_new_powerups(game);
 
             spawn_new_weights(game);
 
             spawn_new_mob(game);
-            if(start_seq <= 0)
+            if(game->start_seq <= 0)
             {
                 update_mc_pos(game);
             
@@ -101,7 +99,7 @@ void update_graphics(GAME* game)
         display_show(game->disp);
         return;
     }
-    else if(start_seq > 0)
+    else if(game->start_seq > 0)
     {
         for(int it = 0; it < game->active_powerups; it++)
         {
@@ -119,7 +117,7 @@ void update_graphics(GAME* game)
 
         draw_bottom_wall(game->disp, game->gym_tiles[BORDER]);
 
-        if(start_seq < 30)
+        if(game->start_seq < 30)
             graphics_draw_sprite_trans( game->disp, 106, 100, game->lift); //lift
         else
             graphics_draw_sprite_trans( game->disp, 106, 100, game->ready); //ready
@@ -127,7 +125,7 @@ void update_graphics(GAME* game)
         display_show(game->disp);
 
         if((animcounter - game->frame_count) > 0)
-            start_seq -= (animcounter - game->frame_count);
+            game->start_seq -= (animcounter - game->frame_count);
         // if(start_seq <= 0)
         // {
         //     insert_score(game->scores, game->gains);
@@ -136,7 +134,7 @@ void update_graphics(GAME* game)
         // }
         return;
     }
-    else if(ending_seq > 0)
+    else if(game->ending_seq > 0)
     {
         graphics_draw_sprite_trans_stride( game->disp, game->mobs[0].x, game->mobs[0].y, game->mob_sprites[game->mobs[0].dir], 0 );
 
@@ -144,16 +142,16 @@ void update_graphics(GAME* game)
 
         draw_bottom_wall(game->disp, game->gym_tiles[BORDER]);
 
-        if(ending_seq < 60)
+        if(game->ending_seq < 60)
             graphics_draw_sprite_trans( game->disp, 88, 80, game->no_fighting);
 
         display_show(game->disp);
 
         if((animcounter - game->frame_count) > 0)
-            ending_seq -= (animcounter - game->frame_count);
-        if(ending_seq <= 0)
+            game->ending_seq -= (animcounter - game->frame_count);
+        if(game->ending_seq <= 0)
         {
-            insert_score(game->scores, game->gains);
+            game->highscore_pos = insert_score(game->scores, game->gains);
             write_scores(game->scores);
             game_over = true;
         }
@@ -763,7 +761,7 @@ void check_collisions(GAME* game)
         {
             //game over!
             game->rage = 10;
-            ending_seq = 90;
+            game->ending_seq = 90;
 
             switch(game->mc.dir)
             {

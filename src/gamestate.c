@@ -89,6 +89,24 @@ GAME* setup_main_game(void)
     }
     newgame->current_score_pop = 0;
 
+    // for(int it = 0; it < MAX_MOBS; it++)
+    // {
+    //     newgame->mob_draw_order[it] = it;
+    // }
+
+    for(int it = 0; it < MAX_MOBS+MAX_WEIGHTS+MAX_POWERUPS+1; it++)
+    {
+        newgame->sprite_draw_list[it].x = 0;
+        newgame->sprite_draw_list[it].y = 0;
+        newgame->sprite_draw_list[it].graphic = NULL;
+    }
+
+    newgame->sprite_draw_list[0].x = newgame->mc.x;
+    newgame->sprite_draw_list[0].y = newgame->mc.y;
+    newgame->sprite_draw_list[0].sort_y = newgame->mc.y + newgame->mc.draw_height;
+    newgame->sprite_draw_list[0].graphic = newgame->mc_current_sprite;
+    newgame->sprite_draw_list[0].graphic_index = 0;
+
     newgame->active_powerups = 0;
     newgame->active_weights = 0;
     newgame->active_mobs = 0;
@@ -96,6 +114,8 @@ GAME* setup_main_game(void)
     powerup_spawn_counter = 3;
     weight_spawn_counter = 3;
     mob_spawn_counter = 3;
+
+    newgame->sprites_to_draw = 1;
 
     juice_timer = new_timer(TIMER_TICKS(2000000), TF_CONTINUOUS, spawn_powerup);
     weight_timer = new_timer(TIMER_TICKS(2000000), TF_CONTINUOUS, spawn_weight);

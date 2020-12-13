@@ -8,5 +8,6 @@ void update_logic(GAME* game);
 void update_graphics(GAME* game);
 void update_audio(GAME* game);
 void cleanup_main_game(GAME* game);
+void sort_mob_draw_order(GAME* game);
 
 #endif

@@ -27,6 +27,14 @@ enum GYM_TILES {BORDER, WALL1, WALL2, WALL3, FLOORS};
 enum EFFECTS {POWERUP1, POWERUP2, HURT1, HURT2, TOTAL_SFX=4};
 
 typedef struct {
+    int x;
+    int y;
+    int sort_y;
+    sprite_t* graphic;
+    uint8_t graphic_index;
+} GAMESPRITE;
+
+typedef struct {
 
     uint8_t highscore_pos;
     uint32_t scores[10];
@@ -34,6 +42,8 @@ typedef struct {
     uint8_t juice, rage;
     int ending_seq;
     int start_seq;
+
+    uint8_t sprites_to_draw;
 
     struct controller_data keys;
     int pad_dir;
@@ -52,6 +62,8 @@ typedef struct {
     sprite_t* hud_juice;
     sprite_t* score_pop_sprites;
 
+    GAMESPRITE sprite_draw_list[MAX_MOBS + MAX_WEIGHTS + MAX_POWERUPS + 1];
+
     display_context_t disp;
 
     int current_song;
@@ -64,6 +76,7 @@ typedef struct {
 
     int active_mobs;
     MOB mobs[MAX_MOBS];
+    //uint8_t mob_draw_order[MAX_MOBS];
 
     int active_powerups; //iterator for our powerups buffer
     int active_weights; //iterator for the weights buffer

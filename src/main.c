@@ -315,7 +315,7 @@ void draw_high_scores(uint32_t* scores, uint8_t highscore_pos, uint32_t gains)
 
         //draw high score table
         graphics_draw_text( disp, 116, 40, "HUGE GAINS:" );
-        char temp_str[16];
+        char temp_str[18];
 
         for(uint8_t it = 0; it < highscore_pos; it++)
         {

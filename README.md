@@ -34,6 +34,20 @@ If you get too upset, drink some water to cool off.
 | C-Left / C-Right | Skip Track      |
 
 
+### Cool, but how do I run this?
+
+To run on actual hardware, you'll need a developer cartridge such as the EverDrive 64 or 64Drive.
+
+The game requires EEPROM4k enabled. EverDrive cartridges should automatically detect this based on the binary header. If it does not, you can edit the save_db.txt file to enable it. For the 64Drive, you'll need to enable it yourself via the menu I believe.
+
+For emulation, you'll need a low level emulator such as CEN64. Don't forget to specify EEPROM4k. Even on recent computers, low level emulation is still typically slower than playing on real hardware.
+
+
+### Technical Difficulties
+
+If you get a blue screen that says EEPROM ERROR, you need to double check you've got your emulator / cartridge setup for EEPROM4k save files.
+
+If you're encountering other game breaking errors, please file an issue describing it.
 
 ## Asset attribution:
 All graphics are edited from base art assets created by other people

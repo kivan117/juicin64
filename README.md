@@ -6,16 +6,36 @@ Game made for the [2020 N64 Homebrew Game Jam](https://www.youtube.com/watch?v=1
 
 Jam Theme: Size
 
+Game made using [libdragon](https://github.com/DragonMinded/libdragon) in a [Windows 10 environment](https://github.com/N64-tools/cmake-demo-rom)
 
-Juicin'
+
+## Juicin'
 
 Juice Up.
 Lift Heavy.
 Get Huge.
 
-Game made using [libdragon](https://github.com/DragonMinded/libdragon) in a [Windows 10 environment](https://github.com/N64-tools/cmake-demo-rom)
 
-Asset attribution:
+## How To Play
+
+Keep your cool and avoid the other gym goers while lifting as many weights as you can.
+
+Use juice to increase your gains! Be careful though, you'll also have less patience should you bump into anyone.
+
+If you get too upset, drink some water to cool off.
+
+### Controls
+|     Button       |      Usage      |
+|:----------------:|:---------------:|
+| D-Pad            | Move            |
+| A                | Advance menu    |
+| Start            | Pause game      |
+| C-Up / C-Down    | Music Volume    |
+| C-Left / C-Right | Skip Track      |
+
+
+
+## Asset attribution:
 All graphics are edited from base art assets created by other people
 
 [Food and Drink Sprites](https://vectorpixelstar.itch.io/)

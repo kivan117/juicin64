@@ -65,8 +65,6 @@ GAME* setup_main_game(void)
     newgame->mc.dir = DOWN;
     newgame->mc.action = IDLE;
 
-    //setup_songs(newgame);
-
     newgame->current_song = 0;
     newgame->bgm = play_song(newgame, newgame->current_song);
     
@@ -88,11 +86,6 @@ GAME* setup_main_game(void)
         newgame->score_pops[it].ttl = -1;
     }
     newgame->current_score_pop = 0;
-
-    // for(int it = 0; it < MAX_MOBS; it++)
-    // {
-    //     newgame->mob_draw_order[it] = it;
-    // }
 
     for(int it = 0; it < MAX_MOBS+MAX_WEIGHTS+MAX_POWERUPS+1; it++)
     {

@@ -104,21 +104,6 @@ void update_graphics(GAME* game)
     }
     else if(game->start_seq > 0)
     {
-        // for(int it = 0; it < game->active_powerups; it++)
-        // {
-        //     graphics_draw_sprite_trans_stride( game->disp, game->powerups[it].x + 24, game->powerups[it].y + 48, game->powerup_sprites, game->powerups[it].type );
-        // }
-        // for(int it = 0; it < game->active_weights; it++)
-        // {
-        //     graphics_draw_sprite_trans_stride( game->disp, game->weights[it].x+8, game->weights[it].y + 48 + 3, game->weight_sprites, game->weights[it].type - 2 ); //hard 2 because first weights type is 2 in the enum
-        // }
-        // for(int it = 0; it < game->active_mobs; it++)
-        // {
-        //     graphics_draw_sprite_trans_stride( game->disp, game->mobs[it].x, game->mobs[it].y, game->mob_sprites[game->mobs[it].dir], ((animcounter / 6) & 0x3)  );
-        // }
-        // graphics_draw_sprite_trans_stride( game->disp, game->mc.x, game->mc.y, game->mc_current_sprite, ((animcounter / 6) & 0x3)  );
-
-        //sort_and_draw_sprites(game);
         rebuild_sprite_draw_list(game);
         sort_sprite_draw_list(game);
         draw_sorted_sprites(game);
@@ -134,12 +119,6 @@ void update_graphics(GAME* game)
 
         if((animcounter - game->frame_count) > 0)
             game->start_seq -= (animcounter - game->frame_count);
-        // if(start_seq <= 0)
-        // {
-        //     insert_score(game->scores, game->gains);
-        //     write_scores(game->scores);
-        //     game_over = true;
-        // }
         return;
     }
     else if(game->ending_seq > 0)
@@ -220,22 +199,6 @@ void update_graphics(GAME* game)
     }
     graphics_draw_sprite_trans_stride( game->disp, 224, 18, game->emote_sprites, avatar_index );
 
-    // for(int it = 0; it < game->active_powerups; it++)
-    // {
-    //     graphics_draw_sprite_trans_stride( game->disp, game->powerups[it].x + 24, game->powerups[it].y + 48, game->powerup_sprites, game->powerups[it].type );
-    // }
-    // for(int it = 0; it < game->active_weights; it++)
-    // {
-    //     graphics_draw_sprite_trans_stride( game->disp, game->weights[it].x+8, game->weights[it].y + 48 + 3, game->weight_sprites, game->weights[it].type - 2 ); //hard 2 because first weights type is 2 in the enum
-    // }
-    // sort_mob_draw_order(game);
-    // for(int it = 0; it < game->active_mobs; it++)
-    // {
-    //     graphics_draw_sprite_trans_stride( game->disp, game->mobs[game->mob_draw_order[it]].x, game->mobs[game->mob_draw_order[it]].y, game->mob_sprites[game->mobs[game->mob_draw_order[it]].dir], ((animcounter / 6) & 0x3)  );
-    // }
-    // graphics_draw_sprite_trans_stride( game->disp, game->mc.x, game->mc.y, game->mc_current_sprite, ((animcounter / 6) & 0x3)  );
-
-    //sort_and_draw_sprites(game);
     rebuild_sprite_draw_list(game);
     sort_sprite_draw_list(game);
     draw_sorted_sprites(game);
@@ -587,11 +550,7 @@ void spawn_new_mob(GAME* game)
                 cardinal_dir = 2;
             }
         }
-        
-
-        //pos_x = (rand() % GYM_COLS);
-        //pos_y = (rand() % GYM_ROWS);
-        
+                
         mob_spawn_counter--;
         if(game->active_mobs < MAX_MOBS)
         {
@@ -622,15 +581,6 @@ void check_collisions(GAME* game)
             continue;
 
         game->occupied[game->powerups[it].x / 16][game->powerups[it].y / 16] = false;                  
-        
-        // if(game->samples[game->sfx_index])
-        // {
-        //     Sample_Free(game->samples[game->sfx_index]);
-        // }
-        // if(game->powerups[it].type == JUICE)
-        //     game->samples[game->sfx_index] = Sample_Load("rom://fx/powerup1.wav");
-        // else if(game->powerups[it].type == WATER)
-        //     game->samples[game->sfx_index] = Sample_Load("rom://fx/powerup2.wav");
 
         if(game->powerups[it].type == JUICE)
             game->samples[game->sfx_index] = game->effects[POWERUP1];
@@ -719,13 +669,6 @@ void check_collisions(GAME* game)
             game->weights[it].y = game->weights[game->active_weights - 1].y;
         }
 
-     
-
-        // if(game->samples[game->sfx_index])
-        // {
-        //     Sample_Free(game->samples[game->sfx_index]);
-        // }
-        //game->samples[game->sfx_index] = Sample_Load("rom://fx/hurt2.wav");
         game->samples[game->sfx_index] = game->effects[HURT2];
         game->voices[game->sfx_index] = Sample_Play(game->samples[game->sfx_index], 0, 0);
         Voice_SetPanning(game->voices[game->sfx_index], PAN_CENTER);
@@ -756,11 +699,6 @@ void check_collisions(GAME* game)
         if((game->mc.y + game->mc.draw_height - game->mc.coll_height) > (game->mobs[it].y + game->mobs[it].draw_height))
             continue;
 
-        // if(game->samples[game->sfx_index])
-        // {
-        //     Sample_Free(game->samples[game->sfx_index]);
-        // }
-        // game->samples[game->sfx_index] = Sample_Load("rom://fx/hurt1.wav");
         game->samples[game->sfx_index] = game->effects[HURT1];
         game->voices[game->sfx_index] = Sample_Play(game->samples[game->sfx_index], 0, 0);
         Voice_SetPanning(game->voices[game->sfx_index], PAN_CENTER);
@@ -831,15 +769,6 @@ void check_collisions(GAME* game)
             game->mobs[it].x =           game->mobs[game->active_mobs - 1].x;
             game->mobs[it].y =           game->mobs[game->active_mobs - 1].y;
         }
-        // for(int it = 0; it < game->active_mobs; it++)
-        // {
-        //     if(game->mob_draw_order[it] == (game->active_mobs - 1))
-        //     {
-        //         game->mob_draw_order[it] = game->mob_draw_order[game->active_mobs - 1];
-        //         game->mob_draw_order[game->active_mobs - 1] = game->active_mobs - 1;
-        //         break;
-        //     }
-        // }
 
         game->active_mobs--;
         if(game->active_mobs < 0)
@@ -847,36 +776,6 @@ void check_collisions(GAME* game)
         mob_spawn_counter++;        
     }
 }
-
-// void sort_mob_draw_order(GAME* game)
-// {
-
-
-//     // game->mob_draw_order[0];
-
-//     // game->mobs[0].y;
-
-//     // game->active_mobs;
-
-//     //using mob_draw_order as an index array
-//     //using an insertion sort since most frames, the
-//     //order should be almost completely sorted already
-//     int i, y_value, stored_index, j;
-//     int n = game->active_mobs;
-//     for (i = 1; i < n; i++)
-//     {
-//         y_value = game->mobs[game->mob_draw_order[i]].y;
-//         stored_index = game->mob_draw_order[i];
-//         j = i - 1;
-//         while (j >= 0 && game->mobs[game->mob_draw_order[j]].y > y_value)
-//         { 
-//             game->mob_draw_order[j + 1] = game->mob_draw_order[j]; 
-//             j = j - 1; 
-//         } 
-//         game->mob_draw_order[j + 1] = stored_index; 
-//     } 
-
-// }
 
 void rebuild_sprite_draw_list(GAME* game)
 {

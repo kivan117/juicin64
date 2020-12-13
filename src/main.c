@@ -176,8 +176,6 @@ void draw_intros()
         /* Set the text output color */
         graphics_set_color( 0x00000000, 0x00000000 );
 
-		//graphics_draw_text( disp, 16, 16, "N64Brew Jam Test" );
-
 		/* Draw jam logo */
         if(animcounter - logocounter > 120)
         {
@@ -198,18 +196,8 @@ void draw_intros()
                     graphics_draw_sprite( disp, 103, 51, n64logo);
                     break;
                 case(3):
-                    graphics_draw_sprite( disp, 120, 45, brewlogo);
-                    //putting game copyright here was confusing visually
-                    //I don't have a copyright on the logos
-                    //graphics_set_color( 0xFFFFFFFF, 0x00000000 );
-                    //graphics_draw_text( disp, 116, 190, "(C)KIVAN117" );
-                    break;
-                case(4):
-                    graphics_draw_sprite( disp, 8, 79, jamlogo);
-                    //putting game copyright here was confusing visually
-                    //I don't have a copyright on the logos
-                    //graphics_set_color( 0xFFFFFFFF, 0x00000000 );
-                    //graphics_draw_text( disp, 116, 190, "(C)KIVAN117" );
+                    graphics_draw_sprite( disp, 8, 120, jamlogo);
+                    graphics_draw_sprite( disp, 120, 24, brewlogo);
                     break;
                 default:
                     break;
@@ -224,10 +212,8 @@ void draw_intros()
         if( keys.c[0].start || keys.c[0].A )
         {
             logo++;
-            /* Lazy switching */
-            //mode = 1 - mode;
         }
-    } while (logo < 5);
+    } while (logo < 4);
 
     free(n64logo);
     free(jamlogo);
@@ -263,7 +249,6 @@ void draw_main_menu(void)
         graphics_set_color( 0xFFFFFFFF, 0x00000000 );
 
         //draw Menu
-        //graphics_draw_text( disp, 124, 40, "Main Menu" );
         graphics_draw_sprite( disp, 94, 30, main_logo);
         graphics_draw_text( disp, 36,  120, "Juice Up. Lift Heavy. Get Huge." );
         graphics_draw_sprite_trans_stride( disp, 152, 162, mc_stand, 0);

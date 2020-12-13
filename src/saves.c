@@ -32,13 +32,17 @@ void reset_eeprom(void)
 {
     uint8_t stored_sum[8];
     //write a whole new eeprom
-    stored_sum[0] = 0xFF;
-    for(int i = 1; i<8; i++)
-    {
-        stored_sum[i] = 0x00;
-    }
+    stored_sum[0] = 0xFF; //inverted checksum for everything after this header. since all values are 0, inverted sum is 0xFF
+    stored_sum[1] = 0x4A; //these next 7 values just spell 'JUICN64'
+    stored_sum[2] = 0x55;
+    stored_sum[3] = 0x49;
+    stored_sum[4] = 0x43;
+    stored_sum[5] = 0x4E;
+    stored_sum[6] = 0x36;
+    stored_sum[7] = 0x34;
     eeprom_write(0, stored_sum); //write the expected checksum to the header
-    stored_sum[0] = 0x00; //make sure all values in our 8 byte buffer are 0
+    for(int it = 0; it < 8; it++)
+        stored_sum[it] = 0x00; //make sure all values in our 8 byte buffer are 0
     //write all 0's to the rest of eeprom
     for(int i = 1; i < 64; i++)
     {

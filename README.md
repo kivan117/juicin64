@@ -40,7 +40,7 @@ To run on actual hardware, you'll need a developer cartridge such as the EverDri
 
 The game requires EEPROM4k enabled. EverDrive cartridges should automatically detect this based on the binary header. If it does not, you can edit the save_db.txt file to enable it. For the 64Drive, you'll need to enable it yourself via the menu I believe.
 
-For emulation, you'll need a low level emulator such as CEN64. Don't forget to specify EEPROM4k. Even on recent computers, low level emulation is still typically slower than playing on real hardware.
+For emulation, you'll need an emulator that supports libdragon games. Recent builds of mupen64plus will work. If all else fails, you can run it in CEN64 or MAME but they're less than full speed even on good modern computers.
 
 
 ### Technical Difficulties
